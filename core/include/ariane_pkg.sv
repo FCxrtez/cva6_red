@@ -51,6 +51,7 @@ package ariane_pkg;
   localparam int unsigned LAT_DIVSQRT = 'd2;
   localparam int unsigned LAT_NONCOMP = 'd1;
   localparam int unsigned LAT_CONV = 'd2;
+  localparam int unsigned LAT_REDUCTION = 'd0;
 
   localparam logic [31:0] OPENHWGROUP_MVENDORID = 32'h0602;
   localparam logic [31:0] ARIANE_MARCHID = 32'd3;
@@ -430,6 +431,7 @@ package ariane_pkg;
     VFCPKCD_S,
     VFCPKAB_D,
     VFCPKCD_D,
+    VFREDSUM,
     // Offload Instructions to be directed into cv_x_if
     OFFLOAD,
     // Or-Combine and REV8
@@ -555,7 +557,7 @@ package ariane_pkg;
   // -------------------------------
   // function used in instr_trace svh
   // is_rs1_fpr function is kept to allow cva6 compilation with instr_trace feature
-  function automatic logic is_rs1_fpr(input fu_op op);
+  function automatic logic  (input fu_op op);
     unique case (op) inside
       [FMUL : FNMADD],  // Computational Operations (except ADD/SUB)
       FCVT_F2I,  // Float-Int Casts
@@ -564,7 +566,7 @@ package ariane_pkg;
       FMV_F2X,  // FPR-GPR Moves
       FCMP,  // Comparisons
       FCLASS,  // Classifications
-      [VFMIN : VFCPKCD_D],  // Additional Vectorial FP ops
+      [VFMIN : VFREDSUM],  // Additional Vectorial FP ops
       ACCEL_OP_FS1:
       return 1'b1;  // Accelerator instructions
       default: return 1'b0;  // all other ops
@@ -581,7 +583,7 @@ package ariane_pkg;
       FCVT_F2F,  // Vectorial F2F Conversions require target
       [FSGNJ : FMV_F2X],  // Sign Injections and moves mapped to SGNJ
       FCMP,  // Comparisons
-      [VFMIN : VFCPKCD_D]:
+      [VFMIN : VFREDSUM]:
       return 1'b1;  // Additional Vectorial FP ops
       default: return 1'b0;  // all other ops
     endcase
@@ -611,7 +613,7 @@ package ariane_pkg;
       FSGNJ,  // Sign Injections
       FMV_X2F,  // GPR-FPR Moves
       [VFMIN : VFSGNJX],  // Vectorial MIN/MAX and SGNJ
-      [VFCPKAB_S : VFCPKCD_D],  // Vectorial FP cast and pack ops
+      [VFCPKAB_S : VFREDSUM],  // Vectorial FP cast and pack ops
       ACCEL_OP_FD:
       return 1'b1;  // Accelerator instructions
       default: return 1'b0;  // all other ops

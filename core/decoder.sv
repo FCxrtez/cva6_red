@@ -760,6 +760,11 @@ module decoder
                     default: illegal_instr = 1'b1;
                   endcase
                 end
+                5'b11100: begin
+                  instruction_o.op = ariane_pkg::VFREDSUM, // vfredsum.vfmt - Vectorial FP Reduction Sum
+                  check_fprm = 1'b1;
+                  allow_replication = 1'b0;  // R must not be set
+                end
                 default: illegal_instr = 1'b1;
               endcase
 

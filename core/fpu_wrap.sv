@@ -86,8 +86,9 @@ module fpu_wrap
             },  // ADDMUL
             '{default: unsigned'(LAT_DIVSQRT)},  // DIVSQRT
             '{default: unsigned'(LAT_NONCOMP)},  // NONCOMP
-            '{default: unsigned'(LAT_CONV)}
-        },  // CONV
+            '{default: unsigned'(LAT_CONV)},     // CONV
+            '{default: unsigned'(LAT_REDUCTION)} // REDUCTION
+        },
         UnitTypes: '{
             '{default: fpnew_pkg::PARALLEL},  // ADDMUL
             '{default: fpnew_pkg::MERGED},  // DIVSQRT
@@ -392,6 +393,10 @@ module fpu_wrap
           fpu_op_mod_d    = fpu_rm_i[0];  // C/D selection from R bit
           vec_replication = 1'b0;  // no replication, R bit used for op
           fpu_srcfmt_d    = fpnew_pkg::FP64;  // Cast from FP64
+        end
+        VFREDSUM: begin
+          fpu_op_d     = fpnew_pkg::FREDSUM;
+          vec_replication = 1'b0;  // no replication for reduction
         end
         // No changes per default
         default: ;  //nothing
